@@ -14,13 +14,18 @@ class TransactionsController < ApplicationController
   end
 
   def create
+    validate_transaction = Transactions::TransactionValidator.new(transaction_params)
+
+    unless validate_transaction.verify_validation
+      return api_response({}, 'deny', [validate_transaction.error_message],
+                          422)
+    end
+
     @transaction = Transaction.new(transaction_params)
 
-    if @transaction.save
-      api_response({ "transaction_id": @transaction.id }, 'approve')
-    else
-      api_response({}, 'deny')
-    end
+    return api_response({ "transaction_id": @transaction.id }, 'approve', 'OK') if @transaction.save
+
+    api_response({}, 'deny', @transaction.errors)
   end
 
   def update
@@ -43,6 +48,6 @@ class TransactionsController < ApplicationController
 
   def transaction_params
     params.require(:transaction).permit(:id, :user_id, :merchant_id, :card_number, :transaction_date,
-                                        :transaction_amount, :device_id, :has_cbkd)
+                                        :transaction_amount, :device_id, :has_cbk)
   end
 end

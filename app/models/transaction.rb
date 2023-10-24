@@ -10,10 +10,6 @@ class Transaction < ApplicationRecord
 
   scope :with_asociation, lambda {
                             select(:id, :name, :company, :card_number, :transaction_date, :transaction_amount, :device_id, :has_cbk)
-                              .joins(:merchant, :user)
+                              .joins(:merchant, :user).order(created_at: :desc)
                           }
-
-  private
-
-  def last_transaction_user; end
 end
