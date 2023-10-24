@@ -27,8 +27,8 @@ The main advantages of a sub-acquirer are its low implementation cost , own anti
 
 Another negative factor for retailers is the redirection of the customer to the sub-acquirer's own page during the final steps of the checkout, which can lead to higher withdrawal rates.
 
-### Gateway
-A gateway (also called payment gateway) is a system that transmits data from purchases made in your store at checkout to companies such as Braspag e Mundipagg.
+### Payment Gateway
+A Payment Gateway is a system that transmits data from purchases made in your store at checkout to companies such as Braspag e Mundipagg.
 
 As the first player in the flow, it's responsible for sending this information to acquirers, card brands and issuing banks then obtain a response about the continuation of the process or its cancellation. In other words, the gateway sends data and receives responses so that you know whether or not a particular purchase should be confirmed, showing whether the payment was approved or not.
 
@@ -41,6 +41,35 @@ A chargeback is the potential outcome of a disputed credit or debit card transac
 When a cardholder disputes a charge, their issuing bank will review the transaction and decide if the dispute is valid. If they believe that it is, they will provide the cardholder with a provisional credit and work with the card network and the acquiring bank to finalize a chargeback.
 
 The chargeback process allows consumers to get their refunds from their banks, and to let banks (rather than cardholders and merchants) make decisions on how to handle the situation. While the process was not yet called a chargeback, it would become the foundation for the dispute system we know today.
+
+# Analysis the arquive csv "transactional sample.csv"
+
+* 307 row without device_id
+* The followning users have more than 5 chargeback 91637, 79054, 96025,  75710,  17929, 56877, 99396, 28218, 71424
+
+# About the code
+
+## Validations taken into consideration:
+
+* The user_id must exist in the user table
+* The merchant_id must exist in the merchants table
+* In the following structure none can be empty:
+
+```
+{
+
+"merchant_id" : 29744,
+"user_id" : 91637,
+"card_number" : "434505******9134",
+"transaction_date" : "2019-11-31T23:16:32.812632",
+"transaction_amount" : 275.99,
+"device_id" : 285475
+}
+
+```
+* Can´t repeat the last transaction with the same values
+
+ * The user cannot have more than 4 charge backs in the last 30 days since the last transaction.
 
 # Instalation
 
@@ -56,9 +85,10 @@ The chargeback process allows consumers to get their refunds from their banks, a
 rake db:create 
 
 ````
-* Seed the data:
+* Migrate and seed the data:
 
 ````
+rake db:migrate
 rake db:seed
 
 ````
